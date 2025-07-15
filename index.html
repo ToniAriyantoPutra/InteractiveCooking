@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CookMaster - Platform Resep Interaktif</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --accent: #ffbe0b;
+            --dark: #1a535c;
+            --light: #f7fff7;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo i {
+            font-size: 2.8rem;
+            color: var(--primary);
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: var(--dark);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Recipe Card */
+        .recipe-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            height: fit-content;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .recipe-img {
+            height: 300px;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+                        url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .recipe-info {
+            padding: 25px;
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1faee;
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .dietary-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tag.vegan {
+            background: #c7f9cc;
+            color: #2d6a4f;
+        }
+
+        .tag.vegetarian {
+            background: #f1faee;
+            color: #1d3557;
+        }
+
+        .tag.gluten-free {
+            background: #a8dadc;
+            color: #1d3557;
+        }
+
+        /* Ingredients Section */
+        .ingredients-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .conversion-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .conversion-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 30px;
+            background: #e9ecef;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .conversion-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .ingredients-list {
+            list-style: none;
+        }
+
+        .ingredient-item {
+            padding: 12px 0;
+            border-bottom: 1px dashed #dee2e6;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-check {
+            margin-top: 4px;
+        }
+
+        /* Timer Section */
+        .timer-section {
+            background: #f8f9fa;
+            border-radius: var(--radius);
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .timer-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-btn.start {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .timer-btn.stop {
+            background: var(--primary);
+            color: white;
+        }
+
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+            font-family: monospace;
+            color: var(--dark);
+            background: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* Grocery List Section */
+        .grocery-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            transition: var(--transition);
+        }
+
+        .grocery-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .grocery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .grocery-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .grocery-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: var(--accent);
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grocery-btn:hover {
+            background: #ffaa00;
+        }
+
+        .grocery-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .grocery-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .grocery-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .grocery-item .item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .grocery-item .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: #e9ecef;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: #dee2e6;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #dee2e6;
+            margin-top: 40px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Utility Classes */
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff5252;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>CookMaster</h1>
+            </div>
+            <p class="tagline">Platform resep interaktif dengan fitur konversi ukuran, timer memasak, dan generator daftar belanjaan</p>
+        </header>
+
+        <div class="app-container">
+            <!-- Recipe Section -->
+            <div class="recipe-card">
+                <div class="recipe-img"></div>
+                <div class="recipe-info">
+                    <div class="recipe-title">
+                        <h2>Pasta Carbonara Premium</h2>
+                        <div class="favorite">
+                            <i class="far fa-heart icon"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-meta">
+                        <div class="meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>25 menit</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-friends"></i>
+                            <span>4 porsi</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-fire"></i>
+                            <span>520 kalori</span>
+                        </div>
+                    </div>
+                    
+                    <div class="dietary-tags">
+                        <div class="tag vegetarian">Vegetarian</div>
+                        <div class="tag gluten-free">Bebas Gluten</div>
+                    </div>
+                    
+                    <div class="ingredients-section">
+                        <div class="section-title">
+                            <i class="fas fa-carrot"></i>
+                            <h3>Bahan-bahan</h3>
+                        </div>
+                        
+                        <div class="conversion-controls">
+                            <button class="conversion-btn active" id="metricBtn">
+                                <i class="fas fa-ruler"></i> Metrik
+                            </button>
+                            <button class="conversion-btn" id="imperialBtn">
+                                <i class="fas fa-ruler-combined"></i> Imperial
+                            </button>
+                        </div>
+                        
+                        <ul class="ingredients-list">
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span>400g spaghetti</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span class="metric">200g daging asap (pancetta)</span>
+                                <span class="imperial" style="display:none">7oz daging asap (pancetta)</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span class="metric">4 butir telur</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span class="metric">100g keju pecorino</span>
+                                <span class="imperial" style="display:none">3.5oz keju pecorino</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span class="metric">50g keju parmesan</span>
+                                <span class="imperial" style="display:none">1.8oz keju parmesan</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span class="metric">2 siung bawang putih</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-check">
+                                <span>Garam dan lada hitam secukupnya</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="timer-section">
+                        <div class="section-title">
+                            <i class="fas fa-stopwatch"></i>
+                            <h3>Timer Memasak</h3>
+                        </div>
+                        
+                        <div class="timer-display" id="timerDisplay">00:00</div>
+                        
+                        <div class="timer-controls">
+                            <button class="timer-btn start" id="startTimer">
+                                <i class="fas fa-play"></i> Mulai
+                            </button>
+                            <button class="timer-btn stop" id="stopTimer" disabled>
+                                <i class="fas fa-stop"></i> Berhenti
+                            </button>
+                            <button class="timer-btn" id="resetTimer">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grocery List Section -->
+            <div class="grocery-card">
+                <div class="grocery-header">
+                    <div class="section-title">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Daftar Belanja</h3>
+                    </div>
+                    <button id="clearList">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+                
+                <div class="grocery-controls">
+                    <button class="grocery-btn" id="addRecipeItems">
+                        <i class="fas fa-plus"></i> Tambahkan Resep
+                    </button>
+                    <button class="grocery-btn" id="addCustomItem">
+                        <i class="fas fa-edit"></i> Tambahkan Manual
+                    </button>
+                </div>
+                
+                <ul class="grocery-list" id="groceryList">
+                    <li class="grocery-item">
+                        <div class="item-info">
+                            <input type="checkbox">
+                            <span>Spaghetti (2 bungkus)</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </li>
+                    <li class="grocery-item">
+                        <div class="item-info">
+                            <input type="checkbox">
+                            <span>Telur (1 lusin)</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </li>
+                    <li class="grocery-item">
+                        <div class="item-info">
+                            <input type="checkbox">
+                            <span>Keju Parmesan (200g)</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-primary" id="printList">
+                        <i class="fas fa-print"></i> Cetak Daftar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 CookMaster - Platform Resep Interaktif | Proyek Portofolio Informatika</p>
+            <p>Fitur: Konversi Metrik/Imperial, Timer Memasak, Generator Daftar Belanja, Filter Diet</p>
+        </footer>
+    </div>
+
+    <script>
+        // Konversi satuan
+        const metricBtn = document.getElementById('metricBtn');
+        const imperialBtn = document.getElementById('imperialBtn');
+        const metricItems = document.querySelectorAll('.metric');
+        const imperialItems = document.querySelectorAll('.imperial');
+        
+        metricBtn.addEventListener('click', () => {
+            metricBtn.classList.add('active');
+            imperialBtn.classList.remove('active');
+            metricItems.forEach(item => item.style.display = 'inline');
+            imperialItems.forEach(item => item.style.display = 'none');
+        });
+        
+        imperialBtn.addEventListener('click', () => {
+            imperialBtn.classList.add('active');
+            metricBtn.classList.remove('active');
+            metricItems.forEach(item => item.style.display = 'none');
+            imperialItems.forEach(item => item.style.display = 'inline');
+        });
+        
+        // Timer memasak
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startTimerBtn = document.getElementById('startTimer');
+        const stopTimerBtn = document.getElementById('stopTimer');
+        const resetTimerBtn = document.getElementById('resetTimer');
+        
+        let timerInterval;
+        let seconds = 0;
+        let isRunning = false;
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+        
+        startTimerBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                isRunning = true;
+                startTimerBtn.disabled = true;
+                stopTimerBtn.disabled = false;
+                
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    timerDisplay.textContent = formatTime(seconds);
+                    
+                    // Beri animasi setiap 10 detik
+                    if (seconds % 10 === 0) {
+                        timerDisplay.classList.add('pulse');
+                        setTimeout(() => {
+                            timerDisplay.classList.remove('pulse');
+                        }, 1000);
+                    }
+                }, 1000);
+            }
+        });
+        
+        stopTimerBtn.addEventListener('click', () => {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+                startTimerBtn.disabled = false;
+                stopTimerBtn.disabled = true;
+            }
+        });
+        
+        resetTimerBtn.addEventListener('click', () => {
+            isRunning = false;
+            clearInterval(timerInterval);
+            seconds = 0;
+            timerDisplay.textContent = formatTime(seconds);
+            startTimerBtn.disabled = false;
+            stopTimerBtn.disabled = true;
+        });
+        
+        // Daftar belanja
+        const groceryList = document.getElementById('groceryList');
+        const addRecipeItemsBtn = document.getElementById('addRecipeItems');
+        const addCustomItemBtn = document.getElementById('addCustomItem');
+        const clearListBtn = document.getElementById('clearList');
+        const printListBtn = document.getElementById('printList');
+        
+        addRecipeItemsBtn.addEventListener('click', () => {
+            const recipeItems = document.querySelectorAll('.ingredient-item');
+            
+            recipeItems.forEach(item => {
+                const itemText = item.querySelector('span').textContent;
+                if (!isItemInList(itemText)) {
+                    addGroceryItem(itemText);
+                }
+            });
+            
+            // Animasi konfirmasi
+            addRecipeItemsBtn.innerHTML = '<i class="fas fa-check"></i> Berhasil Ditambahkan!';
+            addRecipeItemsBtn.style.background = '#38b000';
+            setTimeout(() => {
+                addRecipeItemsBtn.innerHTML = '<i class="fas fa-plus"></i> Tambahkan Resep';
+                addRecipeItemsBtn.style.background = '';
+            }, 2000);
+        });
+        
+        addCustomItemBtn.addEventListener('click', () => {
+            const customItem = prompt('Masukkan bahan yang ingin ditambahkan:');
+            if (customItem && customItem.trim() !== '') {
+                addGroceryItem(customItem);
+            }
+        });
+        
+        clearListBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin menghapus semua item dari daftar belanja?')) {
+                groceryList.innerHTML = '';
+            }
+        });
+        
+        printListBtn.addEventListener('click', () => {
+            alert('Fitur cetak akan membuka jendela print. Pada implementasi nyata, ini akan mencetak daftar belanja.');
+            // window.print(); // Uncomment untuk implementasi nyata
+        });
+        
+        function addGroceryItem(itemText) {
+            const li = document.createElement('li');
+            li.className = 'grocery-item';
+            li.innerHTML = `
+                <div class="item-info">
+                    <input type="checkbox">
+                    <span>${itemText}</span>
+                </div>
+                <div class="item-actions">
+                    <button class="action-btn edit-item">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-item">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Animasi saat menambahkan item
+            li.style.opacity = '0';
+            li.style.transform = 'translateY(20px)';
+            groceryList.appendChild(li);
+            
+            setTimeout(() => {
+                li.style.opacity = '1';
+                li.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Tambahkan event listener untuk tombol hapus
+            li.querySelector('.delete-item').addEventListener('click', function() {
+                li.style.opacity = '0';
+                li.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    li.remove();
+                }, 300);
+            });
+            
+            // Tambahkan event listener untuk tombol edit
+            li.querySelector('.edit-item').addEventListener('click', function() {
+                const newText = prompt('Edit item:', itemText);
+                if (newText && newText.trim() !== '') {
+                    li.querySelector('.item-info span').textContent = newText;
+                }
+            });
+        }
+        
+        function isItemInList(itemText) {
+            const items = groceryList.querySelectorAll('.item-info span');
+            for (let item of items) {
+                if (item.textContent === itemText) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Inisialisasi checkbox bahan
+        const ingredientChecks = document.querySelectorAll('.ingredient-check');
+        ingredientChecks.forEach(check => {
+            check.addEventListener('change', function() {
+                if (this.checked) {
+                    this.parentElement.style.textDecoration = 'line-through';
+                    this.parentElement.style.color = '#6c757d';
+                } else {
+                    this.parentElement.style.textDecoration = 'none';
+                    this.parentElement.style.color = '';
+                }
+            });
+        });
+        
+        // Favorite button
+        const favoriteBtn = document.querySelector('.favorite i');
+        favoriteBtn.addEventListener('click', function() {
+            if (this.classList.contains('far')) {
+                this.classList.remove('far');
+                this.classList.add('fas', 'animate__animated', 'animate__heartBeat');
+                this.style.color = '#ff6b6b';
+                
+                // Hapus kelas animasi setelah selesai
+                setTimeout(() => {
+                    this.classList.remove('animate__animated', 'animate__heartBeat');
+                }, 1000);
+            } else {
+                this.classList.remove('fas');
+                this.classList.add('far');
+                this.style.color = '';
+            }
+        });
+    </script>
+</body>
+</html>
